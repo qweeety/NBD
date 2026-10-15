@@ -15,10 +15,6 @@ import java.time.LocalTime;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Strona "wiele" obu relacji: wiele treningów należy do jednego zawodnika
- * i wiele treningów odbywa się w jednej sali. To ta encja jest właścicielem kluczy obcych.
- */
 @Entity
 @Table(name = "training",
         indexes = @Index(name = "idx_training_room_date", columnList = "room_id, training_date"))

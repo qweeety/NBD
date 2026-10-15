@@ -28,10 +28,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Współbieżne dodawanie treningów do tej samej sali. Wątki startują naraz (zatrzask),
- * każdy w osobnej transakcji na osobnym połączeniu z bazą.
- */
 class ConcurrentBookingTest {
 
     private static final LocalDate DAY = LocalDate.of(2026, 10, 21);
@@ -69,7 +65,6 @@ class ConcurrentBookingTest {
         return athlete;
     }
 
-    /** Uruchamia wszystkie próby jednocześnie i zwraca, ile z nich zakończyło się sukcesem. */
     private static int runConcurrently(List<Training> attempts) throws Exception {
         ExecutorService pool = Executors.newFixedThreadPool(attempts.size());
         try {

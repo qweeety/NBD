@@ -23,7 +23,7 @@ class DataInitializerTest {
             JpaTrainingRepositoryAdapter trainings = new JpaTrainingRepositoryAdapter(emf);
 
             DataInitializer.seed(athletes, rooms, trainings);
-            DataInitializer.seed(athletes, rooms, trainings); // drugie wywołanie nic nie zmienia
+            DataInitializer.seed(athletes, rooms, trainings);
 
             assertNotNull(athletes.findById(DataInitializer.ATHLETE_ANNA));
             assertNotNull(athletes.findById(DataInitializer.ATHLETE_PIOTR));

@@ -9,10 +9,6 @@ public final class TrainingMapper {
 
     private TrainingMapper() { }
 
-    /**
-     * Zawodnik i sala muszą być już zarządzanymi encjami (załadowanymi w tej samej jednostce pracy),
-     * dzięki czemu klucze obce wskazują na istniejące wiersze.
-     */
     public static TrainingEnt toEnt(Training training, AthleteEnt athlete, TrainingRoomEnt room) {
         return new TrainingEnt(
                 training.getId(),

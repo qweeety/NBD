@@ -15,7 +15,6 @@ import repositories.TrainingRepository;
 import java.util.List;
 import java.util.UUID;
 
-/** Adapter: implementuje interfejs domenowy, konwertuje model i deleguje do repozytoriów JPA. */
 public class JpaTrainingRepositoryAdapter implements TrainingRepository {
 
     private final JpaTransactions tx;
@@ -24,17 +23,6 @@ public class JpaTrainingRepositoryAdapter implements TrainingRepository {
         this.tx = new JpaTransactions(emf);
     }
 
-    /**
-     * Dodaje trening w jednej transakcji, pilnując reguły biznesowej: w danej sali nie mogą
-     * nakładać się dwa treningi. Operację można wywołać współbieżnie dla tej samej sali.
-     *
-     * Kolejność: blokada wiersza sali -> sprawdzenie sali i zawodnika -> sprawdzenie nakładania
-     * -> zapis. Wszystkie transakcje rezerwujące tę samą salę ustawiają się w kolejce na blokadzie,
-     * więc każda następna widzi już zatwierdzone treningi poprzedniej i odrzuca nakładający się.
-     *
-     * @throws IllegalArgumentException gdy sala albo zawodnik nie istnieje w bazie
-     * @throws IllegalStateException    gdy sala jest zarchiwizowana lub termin się nakłada
-     */
     @Override
     public void add(Training training) {
         tx.run(em -> {

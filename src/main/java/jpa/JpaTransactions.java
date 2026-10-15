@@ -7,11 +7,6 @@ import jakarta.persistence.EntityTransaction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-/**
- * Jedna jednostka pracy = jeden EntityManager + jedna transakcja (RESOURCE_LOCAL).
- * Commit przy sukcesie, rollback przy dowolnym wyjątku, który jest przekazywany dalej bez opakowywania.
- * Poziom izolacji ustawia persistence.xml (READ_COMMITTED).
- */
 public class JpaTransactions {
 
     private final EntityManagerFactory emf;

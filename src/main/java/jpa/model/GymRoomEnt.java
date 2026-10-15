@@ -1,24 +1,26 @@
 package jpa.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "gym_room")
+@DiscriminatorValue("GYM")
 public class GymRoomEnt extends TrainingRoomEnt {
 
-    @Column(nullable = false)
+    @Column(name = "equipment")
     private String equipment;
 
     protected GymRoomEnt() {
-        // wymagany przez JPA
     }
 
     public GymRoomEnt(UUID id, int roomNumber, boolean archived, String equipment) {
         super(id, roomNumber, archived);
+        if (equipment == null || equipment.isBlank()) {
+            throw new IllegalArgumentException("Equipment cannot be empty");
+        }
         this.equipment = equipment;
     }
 

@@ -6,11 +6,6 @@ import jakarta.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Fabryka dla testów: ta sama jednostka persystencji co w aplikacji, ale na bazie nbd_test
- * i ze schematem tworzonym od zera (create-drop). Wymaga uruchomionego Docker/docker-compose.yml.
- * Adres bazy można nadpisać: -Dnbd.test.db.url=jdbc:postgresql://host:5432/nbd_test
- */
 final class TestEntityManagerFactory {
 
     private TestEntityManagerFactory() { }

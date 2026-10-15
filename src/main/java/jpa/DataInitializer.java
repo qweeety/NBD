@@ -12,10 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-/**
- * Dane początkowe. Zależy wyłącznie od interfejsów domenowych, więc ten sam kod zasili
- * także przyszłe implementacje na innych bazach. Idempotentny: drugie wywołanie nic nie robi.
- */
 public final class DataInitializer {
 
     public static final UUID ATHLETE_ANNA = UUID.fromString("00000000-0000-0000-0000-0000000000a1");

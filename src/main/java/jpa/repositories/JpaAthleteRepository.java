@@ -5,7 +5,6 @@ import jpa.model.AthleteEnt;
 
 import java.util.UUID;
 
-/** Repozytorium na poziomie modelu bazodanowego. Nie zna klas domenowych. */
 public class JpaAthleteRepository {
 
     private final EntityManager em;

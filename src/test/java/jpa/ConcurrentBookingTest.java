@@ -84,7 +84,7 @@ class ConcurrentBookingTest {
                         trainings.add(attempt);
                         return true;
                     } catch (IllegalStateException rejected) {
-                        return false; // regułę biznesową obroniła blokada, to oczekiwany wynik
+                        return false;
                     }
                 }));
             }

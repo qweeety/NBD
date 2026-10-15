@@ -8,7 +8,6 @@ import jpa.model.PoolRoomEnt;
 import jpa.model.TrainingRoomEnt;
 import org.hibernate.Hibernate;
 
-/** Konwersja polimorficzna: podklasa domenowa <-> podklasa encji. */
 public final class TrainingRoomMapper {
 
     private TrainingRoomMapper() { }

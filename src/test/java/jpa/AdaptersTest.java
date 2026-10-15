@@ -165,16 +165,9 @@ class AdaptersTest {
     @Test
     void roomArchivedInDatabaseIsRejectedEvenWhenDomainObjectIsStale() {
         Athlete athlete = newAthlete();
-        GymRoom staleRoom = newGym(); // obiekt domenowy nadal twierdzi, że sala nie jest zarchiwizowana
+        GymRoom staleRoom = newGym();
 
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.find(TrainingRoomEnt.class, staleRoom.getId()).setArchived(true);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
+        rooms.setArchived(staleRoom.getId(), true);
 
         assertThrows(IllegalStateException.class,
                 () -> trainings.add(training(athlete, staleRoom, DAY, 10, 11)));

@@ -1,24 +1,26 @@
 package jpa.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 import java.util.UUID;
 
 @Entity
-@Table(name = "pool_room")
+@DiscriminatorValue("POOL")
 public class PoolRoomEnt extends TrainingRoomEnt {
 
-    @Column(name = "lane_count", nullable = false)
-    private int laneCount;
+    @Column(name = "lane_count")
+    private Integer laneCount;
 
     protected PoolRoomEnt() {
-        // wymagany przez JPA
     }
 
     public PoolRoomEnt(UUID id, int roomNumber, boolean archived, int laneCount) {
         super(id, roomNumber, archived);
+        if (laneCount <= 0) {
+            throw new IllegalArgumentException("Lane count must be positive");
+        }
         this.laneCount = laneCount;
     }
 

@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-/** Testy na poziomie repozytoriów JPA, czyli bezpośrednio na modelu bazodanowym (bez adapterów). */
 class JpaRepositoriesTest {
 
     private static final LocalDate DAY = LocalDate.of(2026, 10, 22);

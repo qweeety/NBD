@@ -10,7 +10,6 @@ import repositories.TrainingRoomRepository;
 
 import java.util.UUID;
 
-/** Adapter: implementuje interfejs domenowy, konwertuje model i deleguje do repozytorium JPA. */
 public class JpaTrainingRoomRepositoryAdapter implements TrainingRoomRepository {
 
     private final JpaTransactions tx;
@@ -24,12 +23,22 @@ public class JpaTrainingRoomRepositoryAdapter implements TrainingRoomRepository 
         tx.run(em -> new JpaTrainingRoomRepository(em).add(TrainingRoomMapper.toEnt(room)));
     }
 
-    /** @return sala (GymRoom lub PoolRoom) albo null, gdy nie istnieje */
     @Override
     public TrainingRoom findById(UUID id) {
         return tx.call(em -> {
             TrainingRoomEnt ent = new JpaTrainingRoomRepository(em).findById(id);
             return ent == null ? null : TrainingRoomMapper.toDomain(ent);
+        });
+    }
+
+    @Override
+    public void setArchived(UUID id, boolean archived) {
+        tx.run(em -> {
+            TrainingRoomEnt ent = new JpaTrainingRoomRepository(em).findByIdForUpdate(id);
+            if (ent == null) {
+                throw new IllegalArgumentException("Room does not exist: " + id);
+            }
+            ent.setArchived(archived);
         });
     }
 }

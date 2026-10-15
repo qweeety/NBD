@@ -1,6 +1,8 @@
 package jpa.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
@@ -15,20 +17,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Korzeń hierarchii dziedziczenia encji sal (strategia JOINED):
- * wspólne kolumny w tabeli training_room, kolumny podklas w gym_room i pool_room.
- * Jedna sala ma wiele treningów (relacja jeden-do-wielu, dwukierunkowa).
- */
 @Entity
 @Table(name = "training_room")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "room_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class TrainingRoomEnt {
 
     @Id
     private UUID id;
 
-    /** Blokada optymistyczna: każda zmiana wiersza sali podbija wersję. */
     @Version
     private Long version;
 
@@ -38,12 +35,10 @@ public abstract class TrainingRoomEnt {
     @Column(nullable = false)
     private boolean archived;
 
-    /** Strona odwrotna relacji. Właścicielem jest TrainingEnt.room. */
     @OneToMany(mappedBy = "room")
     private Set<TrainingEnt> trainings = new HashSet<>();
 
     protected TrainingRoomEnt() {
-        // wymagany przez JPA
     }
 
     protected TrainingRoomEnt(UUID id, int roomNumber, boolean archived) {

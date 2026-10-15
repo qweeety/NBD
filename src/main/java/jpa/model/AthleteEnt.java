@@ -13,10 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Encja bazodanowa odpowiadająca domain.Athlete.
- * Jeden zawodnik ma wiele treningów (relacja jeden-do-wielu, dwukierunkowa).
- */
 @Entity
 @Table(name = "athlete")
 public class AthleteEnt {
@@ -33,7 +29,6 @@ public class AthleteEnt {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    /** Strona odwrotna relacji. Właścicielem jest TrainingEnt.athlete (to tam jest klucz obcy). */
     @OneToMany(mappedBy = "athlete")
     private Set<TrainingEnt> trainings = new HashSet<>();
 

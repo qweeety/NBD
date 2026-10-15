@@ -7,10 +7,6 @@ import jpa.adapters.JpaAthleteRepositoryAdapter;
 import jpa.adapters.JpaTrainingRepositoryAdapter;
 import jpa.adapters.JpaTrainingRoomRepositoryAdapter;
 
-/**
- * Uruchomienie aplikacji na bazie "nbd" z docker-compose: Hibernate tworzy tabele (hbm2ddl=update),
- * a DataInitializer wstawia dane początkowe (tylko jeśli ich jeszcze nie ma).
- */
 public class Main {
 
     public static void main(String[] args) {

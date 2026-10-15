@@ -10,7 +10,6 @@ import repositories.AthleteRepository;
 
 import java.util.UUID;
 
-/** Adapter: implementuje interfejs domenowy, konwertuje model i deleguje do repozytorium JPA. */
 public class JpaAthleteRepositoryAdapter implements AthleteRepository {
 
     private final JpaTransactions tx;
@@ -24,7 +23,6 @@ public class JpaAthleteRepositoryAdapter implements AthleteRepository {
         tx.run(em -> new JpaAthleteRepository(em).add(AthleteMapper.toEnt(athlete)));
     }
 
-    /** @return zawodnik albo null, gdy nie istnieje */
     @Override
     public Athlete findById(UUID id) {
         return tx.call(em -> {

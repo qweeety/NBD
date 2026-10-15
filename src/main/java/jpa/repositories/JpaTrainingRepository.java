@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-/** Repozytorium na poziomie modelu bazodanowego. Nie zna klas domenowych. */
 public class JpaTrainingRepository {
 
     private final EntityManager em;
@@ -22,11 +21,7 @@ public class JpaTrainingRepository {
 
     public List<TrainingEnt> findByRoom(UUID roomId) {
         return em.createQuery(
-                        "select t from TrainingEnt t "
-                                + "join fetch t.athlete "
-                                + "join fetch t.room "
-                                + "where t.room.id = :roomId "
-                                + "order by t.trainingDate, t.beginTime",
+                        "SELECT t FROM TrainingEnt t JOIN FETCH t.athlete JOIN FETCH t.room WHERE t.room.id = :roomId",
                         TrainingEnt.class)
                 .setParameter("roomId", roomId)
                 .getResultList();
@@ -34,10 +29,7 @@ public class JpaTrainingRepository {
 
     public List<TrainingEnt> findByRoomAndDate(UUID roomId, LocalDate date) {
         return em.createQuery(
-                        "select t from TrainingEnt t "
-                                + "join fetch t.athlete "
-                                + "join fetch t.room "
-                                + "where t.room.id = :roomId and t.trainingDate = :date",
+                        "SELECT t FROM TrainingEnt t JOIN FETCH t.athlete JOIN FETCH t.room WHERE t.room.id = :roomId AND t.trainingDate = :date",
                         TrainingEnt.class)
                 .setParameter("roomId", roomId)
                 .setParameter("date", date)

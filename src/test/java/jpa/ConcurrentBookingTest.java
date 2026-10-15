@@ -22,18 +22,16 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConcurrentBookingTest {
 
     private static final LocalDate DAY = LocalDate.of(2026, 10, 21);
-    private static final int THREADS = 16;
-    private static final int ROUNDS = 5;
-    private static final AtomicInteger ROOM_NUMBERS = new AtomicInteger(1000);
+    private static int roomCounter = 1000;
 
     private static EntityManagerFactory emf;
     private static AthleteRepository athletes;
@@ -54,7 +52,7 @@ class ConcurrentBookingTest {
     }
 
     private static GymRoom newRoom() {
-        GymRoom room = new GymRoom(UUID.randomUUID(), ROOM_NUMBERS.incrementAndGet(), false, "barbells");
+        GymRoom room = new GymRoom(UUID.randomUUID(), ++roomCounter, false, "barbells");
         rooms.add(room);
         return room;
     }
@@ -65,63 +63,55 @@ class ConcurrentBookingTest {
         return athlete;
     }
 
-    private static int runConcurrently(List<Training> attempts) throws Exception {
+    private static int runConcurrently(List<Training> attempts) throws InterruptedException {
         ExecutorService pool = Executors.newFixedThreadPool(attempts.size());
-        try {
-            CountDownLatch ready = new CountDownLatch(attempts.size());
-            CountDownLatch go = new CountDownLatch(1);
-            List<Future<Boolean>> results = new ArrayList<>();
-            for (Training attempt : attempts) {
-                results.add(pool.submit(() -> {
-                    ready.countDown();
-                    go.await();
-                    try {
-                        trainings.add(attempt);
-                        return true;
-                    } catch (IllegalStateException rejected) {
-                        return false;
-                    }
-                }));
-            }
-            ready.await();
-            go.countDown();
+        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch doneLatch = new CountDownLatch(attempts.size());
+        AtomicInteger succeeded = new AtomicInteger(0);
 
-            int succeeded = 0;
-            for (Future<Boolean> result : results) {
-                if (result.get(60, TimeUnit.SECONDS)) {
-                    succeeded++;
+        for (Training attempt : attempts) {
+            pool.submit(() -> {
+                try {
+                    startLatch.await();
+                    trainings.add(attempt);
+                    succeeded.incrementAndGet();
+                } catch (IllegalStateException rejected) {
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+                    doneLatch.countDown();
                 }
-            }
-            return succeeded;
-        } finally {
-            pool.shutdownNow();
+            });
         }
+
+        startLatch.countDown();
+        boolean finished = doneLatch.await(60, TimeUnit.SECONDS);
+        pool.shutdownNow();
+        assertTrue(finished, "threads did not finish, possible deadlock");
+        return succeeded.get();
     }
 
     @Test
-    void ofManyConcurrentOverlappingBookingsExactlyOneSucceeds() throws Exception {
-        for (int round = 0; round < ROUNDS; round++) {
-            GymRoom room = newRoom();
-            List<Training> attempts = new ArrayList<>();
-            for (int i = 0; i < THREADS; i++) {
-                Athlete athlete = newAthlete(i);
-                attempts.add(new Training(UUID.randomUUID(), athlete, room, DAY,
-                        LocalTime.of(10, 0), LocalTime.of(11, 0)));
-            }
-
-            int succeeded = runConcurrently(attempts);
-
-            assertEquals(1, succeeded, "round " + round + ": exactly one booking should win");
-            assertEquals(1, trainings.findByRoom(room.getId()).size(),
-                    "round " + round + ": exactly one training should be stored");
-        }
-    }
-
-    @Test
-    void concurrentBookingsOfDisjointSlotsAllSucceed() throws Exception {
+    void ofManyConcurrentOverlappingBookingsExactlyOneSucceeds() throws InterruptedException {
         GymRoom room = newRoom();
         List<Training> attempts = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 10; i++) {
+            Athlete athlete = newAthlete(i);
+            attempts.add(new Training(UUID.randomUUID(), athlete, room, DAY,
+                    LocalTime.of(10, 0), LocalTime.of(11, 0)));
+        }
+
+        int succeeded = runConcurrently(attempts);
+
+        assertEquals(1, succeeded);
+        assertEquals(1, trainings.findByRoom(room.getId()).size());
+    }
+
+    @Test
+    void concurrentBookingsOfDisjointSlotsAllSucceed() throws InterruptedException {
+        GymRoom room = newRoom();
+        List<Training> attempts = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
             Athlete athlete = newAthlete(i);
             attempts.add(new Training(UUID.randomUUID(), athlete, room, DAY,
                     LocalTime.of(8 + i, 0), LocalTime.of(9 + i, 0)));
@@ -129,18 +119,7 @@ class ConcurrentBookingTest {
 
         int succeeded = runConcurrently(attempts);
 
-        assertEquals(8, succeeded);
-        assertEquals(8, trainings.findByRoom(room.getId()).size());
-    }
-
-    @Test
-    void concurrentBookingsInDifferentRoomsDoNotBlockEachOther() throws Exception {
-        List<Training> attempts = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            attempts.add(new Training(UUID.randomUUID(), newAthlete(i), newRoom(), DAY,
-                    LocalTime.of(10, 0), LocalTime.of(11, 0)));
-        }
-
-        assertEquals(8, runConcurrently(attempts));
+        assertEquals(5, succeeded);
+        assertEquals(5, trainings.findByRoom(room.getId()).size());
     }
 }

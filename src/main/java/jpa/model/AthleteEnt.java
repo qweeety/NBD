@@ -33,7 +33,6 @@ public class AthleteEnt {
     private Set<TrainingEnt> trainings = new HashSet<>();
 
     protected AthleteEnt() {
-        // wymagany przez JPA
     }
 
     public AthleteEnt(UUID id, String firstName, String lastName) {

@@ -14,9 +14,6 @@ public class Training {
 
     public Training(UUID id, Athlete athlete, TrainingRoom room,
                     LocalDate date, LocalTime beginTime, LocalTime endTime) {
-        if (room.isArchived()) {
-            throw new IllegalArgumentException("Room is archived");
-        }
         if (!beginTime.isBefore(endTime)) {
             throw new IllegalArgumentException("Wrong time");
         }

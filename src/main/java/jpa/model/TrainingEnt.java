@@ -4,7 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -16,8 +15,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "training",
-        indexes = @Index(name = "idx_training_room_date", columnList = "room_id, training_date"))
+@Table(name = "training")
 public class TrainingEnt {
 
     @Id
@@ -44,7 +42,6 @@ public class TrainingEnt {
     private LocalTime endTime;
 
     protected TrainingEnt() {
-        // wymagany przez JPA
     }
 
     public TrainingEnt(UUID id, AthleteEnt athlete, TrainingRoomEnt room,

@@ -1,0 +1,1 @@
+CREATE DATABASE nbd_test OWNER nbd;

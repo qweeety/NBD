@@ -1,16 +1,21 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres
-    restart: always
+  postgres:
+    image: postgres:16
+    container_name: nbd-postgres
     environment:
-      POSTGRES_DB: nbddb
       POSTGRES_USER: nbd
       POSTGRES_PASSWORD: nbdpassword
+      POSTGRES_DB: nbd
     ports:
-      - 5432:5432
+      - "5433:5432"
     volumes:
-      - pg:/var/lib/postgresql/data
+      - nbd-pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nbd -d nbd"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
-  pg:
+  nbd-pgdata:
